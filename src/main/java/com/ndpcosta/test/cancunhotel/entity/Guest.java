@@ -10,8 +10,8 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "tb_room")
-public class Customer {
+@Table(name = "tb_guest")
+public class Guest {
 
     @Id
     @SequenceGenerator(name = "tb_room_seq", allocationSize = 1, sequenceName = "tb_room_seq")
