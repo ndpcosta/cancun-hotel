@@ -1,1 +1,1 @@
-# alten-cancun-hotel
+Project to exercise some Spring concepts
