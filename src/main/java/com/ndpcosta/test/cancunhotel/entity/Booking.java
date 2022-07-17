@@ -1,11 +1,10 @@
 package com.ndpcosta.test.cancunhotel.entity;
 
-import com.ndpcosta.test.cancunhotel.enums.BookingStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -28,10 +27,10 @@ public class Booking {
     private Room room;
 
     @Column(name = "checkin_date", nullable = false)
-    private LocalDateTime checkinDate;
+    private LocalDate checkinDate;
 
     @Column(name = "checkout_date", nullable = false)
-    private LocalDateTime checkoutDate;
+    private LocalDate checkoutDate;
 
     @Column(name = "status", nullable = false)
     private String bookingStatus;

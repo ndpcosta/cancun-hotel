@@ -13,6 +13,7 @@ import com.ndpcosta.test.cancunhotel.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -52,12 +53,12 @@ public class BookingServiceImpl implements BookingService {
 
     }
 
-    private void checkRoomAvailabity(LocalDateTime checkinDate, LocalDateTime checkoutDate) {
+    private void checkRoomAvailabity(LocalDate checkinDate, LocalDate checkoutDate) {
         //throw roomNotAvailableError
     }
 
     private void checkReservationRequest(BookingRequestDTO dto) {
-        if(dto.getCheckinDate().isAfter((LocalDateTime.now().plusDays(31)))){
+        if(dto.getCheckinDate().isAfter((LocalDate.now().plusDays(31)))){
             //throw error - too early to book, please book with 30 or less days in advance
         }
     }
@@ -74,12 +75,22 @@ public class BookingServiceImpl implements BookingService {
         booking.setGuest(guest.get());
         booking.setCheckinDate(dto.getCheckinDate());
         booking.setCheckoutDate(dto.getCheckoutDate());
-        booking.setBookingStatus(bookingStatus.getBookingStatus());
+        booking.setBookingStatus(bookingStatus.name());
 
         return booking;
     }
 
     private BookingResponseDTO buildBookingResponseDTO(Booking booking) {
-        return null;
+        BookingResponseDTO responseDTO = new BookingResponseDTO();
+        responseDTO.setBookingId(booking.getId());
+        responseDTO.setGuestName(booking.getGuest().getName());
+        responseDTO.setRoomName(booking.getRoom().getName());
+        responseDTO.setCheckinDate(booking.getCheckinDate());
+        responseDTO.setCheckoutDate(booking.getCheckoutDate());
+
+        BookingStatus bookingStatus = BookingStatus.getByName(booking.getBookingStatus());
+        responseDTO.setBookingStatus(bookingStatus.getBookingStatus());
+
+        return responseDTO;
     }
 }
