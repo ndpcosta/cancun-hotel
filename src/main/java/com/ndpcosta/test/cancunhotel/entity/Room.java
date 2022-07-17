@@ -12,11 +12,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table
+@Table(name = "tb_room")
 public class Room {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "tb_room_seq", allocationSize = 1, sequenceName = "tb_room_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "tb_room_seq")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name")

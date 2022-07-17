@@ -1,23 +1,22 @@
 package com.ndpcosta.test.cancunhotel.entity;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
-@Table
+@Table(name = "tb_booking")
 public class Booking {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "tb_room_seq", allocationSize = 1, sequenceName = "tb_room_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "tb_room_seq")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -29,8 +28,11 @@ public class Booking {
     private Room room;
 
     @Column(name = "checkin_date")
-    private Date checkinDate;
+    private LocalDateTime checkinDate;
 
-    @Column(name = "checkout_date")
-    private Date checkoutDate;
 }
+
+
+
+
+
