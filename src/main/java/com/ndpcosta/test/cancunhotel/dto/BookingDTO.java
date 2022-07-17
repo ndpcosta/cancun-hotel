@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDTO implements Serializable {
