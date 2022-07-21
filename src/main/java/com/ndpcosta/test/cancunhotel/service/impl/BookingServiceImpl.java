@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -54,7 +53,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkRoomAvailabity(LocalDate checkinDate, LocalDate checkoutDate) {
-        //throw roomNotAvailableError
+        if(!bookingRepository.findRoomAlreadyBooked(checkinDate, checkoutDate).isEmpty()){
+            throw new NullPointerException();
+        }
     }
 
     private void checkReservationRequest(BookingRequestDTO dto) {
@@ -88,9 +89,19 @@ public class BookingServiceImpl implements BookingService {
         responseDTO.setCheckinDate(booking.getCheckinDate());
         responseDTO.setCheckoutDate(booking.getCheckoutDate());
 
-        BookingStatus bookingStatus = BookingStatus.getByName(booking.getBookingStatus());
+        BookingStatus bookingStatus = BookingStatus.valueOf(booking.getBookingStatus());
         responseDTO.setBookingStatus(bookingStatus.getBookingStatus());
 
         return responseDTO;
     }
+
+    /*
+    * stream
+    * MVC pattern
+    * transação síncrona e assíncrona
+    * protocolo rest (get, put, post,delete...)
+    * diferença entre for e stream
+    * hibernate
+    * anotações do spring
+    * */
 }

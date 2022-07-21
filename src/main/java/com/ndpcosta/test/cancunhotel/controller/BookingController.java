@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,7 +17,7 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping("/bookroom")
-    ResponseEntity<BookingResponseDTO> newEmployee(@RequestBody BookingRequestDTO request) {
+    ResponseEntity<BookingResponseDTO> bookRoom(@RequestBody BookingRequestDTO request) {
         BookingResponseDTO responseDTO = bookingService.createBooking(request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
