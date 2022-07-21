@@ -95,13 +95,4 @@ public class BookingServiceImpl implements BookingService {
         return responseDTO;
     }
 
-    /*
-    * stream
-    * MVC pattern
-    * transação síncrona e assíncrona
-    * protocolo rest (get, put, post,delete...)
-    * diferença entre for e stream
-    * hibernate
-    * anotações do spring
-    * */
 }
