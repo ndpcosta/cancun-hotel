@@ -4,14 +4,14 @@ import com.ndpcosta.test.cancunhotel.dto.BookingRequestDTO;
 import com.ndpcosta.test.cancunhotel.dto.BookingResponseDTO;
 import com.ndpcosta.test.cancunhotel.entity.Booking;
 import com.ndpcosta.test.cancunhotel.entity.Guest;
-import com.ndpcosta.test.cancunhotel.entity.Room;
-import com.ndpcosta.test.cancunhotel.enums.BookingStatus;
-import com.ndpcosta.test.cancunhotel.exception.ExceptionDefinitionsEnum;
+import com.ndpcosta.test.cancunhotel.enums.BookingStatusEnum;
+import com.ndpcosta.test.cancunhotel.enums.ExceptionDefinitionsEnum;
+import com.ndpcosta.test.cancunhotel.enums.RoomEnum;
 import com.ndpcosta.test.cancunhotel.exception.HotelException;
 import com.ndpcosta.test.cancunhotel.repository.BookingRepository;
 import com.ndpcosta.test.cancunhotel.repository.GuestRepository;
-import com.ndpcosta.test.cancunhotel.repository.RoomRepository;
 import com.ndpcosta.test.cancunhotel.service.BookingService;
+import com.ndpcosta.test.cancunhotel.utils.ReservationNumberBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,26 +25,22 @@ public class BookingServiceImpl implements BookingService {
     private BookingRepository bookingRepository;
 
     @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
     private GuestRepository guestRepository;
-
-    @Override
-    public void cancelBooking() {
-
-    }
 
     @Override
     public BookingResponseDTO createBooking(BookingRequestDTO dto) throws HotelException {
         checkReservationRequest(dto);
-        checkRoomAvailabity(dto.getCheckinDate(), dto.getCheckoutDate());
 
-        Optional<Booking> booking = Optional.ofNullable(bookingRepository.save(buildBooking(dto, BookingStatus.CONFIRMED)));
-        booking.orElseThrow(); //add specific exception
+        RoomEnum room = RoomEnum.valueOf(dto.getRoomId());
+        if(room == null) {
+            throw new HotelException(ExceptionDefinitionsEnum.ROOM_NOT_FOUND);
+        }
 
+        checkRoomAvailability(dto.getCheckinDate(), dto.getCheckoutDate());
+
+        Optional<Booking> booking = Optional.ofNullable(bookingRepository.save(buildBooking(dto, room, BookingStatusEnum.CONFIRMED)));
         BookingResponseDTO responseDTO = buildBookingResponseDTO(booking.get());
-        responseDTO.setBookingStatus(BookingStatus.CONFIRMED.getBookingStatus());
+        responseDTO.setBookingStatus(BookingStatusEnum.CONFIRMED.getBookingStatus());
 
         return responseDTO;
     }
@@ -52,7 +48,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void changeBooking() {}
 
-    private void checkRoomAvailabity(LocalDate checkinDate, LocalDate checkoutDate) throws HotelException {
+    @Override
+    public void cancelBooking() {}
+
+    private void checkRoomAvailability(LocalDate checkinDate, LocalDate checkoutDate) throws HotelException {
         if(bookingRepository.findRoomAlreadyBooked(checkinDate, checkoutDate).isPresent()){
             throw new HotelException(ExceptionDefinitionsEnum.ROOM_NOT_AVAILABLE);
         };
@@ -60,20 +59,21 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkReservationRequest(BookingRequestDTO dto) throws HotelException {
         if(dto.getCheckinDate().isAfter((LocalDate.now().plusDays(31)))){
-            throw new HotelException(ExceptionDefinitionsEnum.TOO_EARLY_TOO_BOOK);
+            throw new HotelException(ExceptionDefinitionsEnum.TOO_EARLY_TO_BOOK);
+        }
+        if(dto.getCheckinDate().isBefore(LocalDate.now())){
+            throw new HotelException(ExceptionDefinitionsEnum.TOO_LATE_TO_BOOK);
         }
     }
 
-    private Booking buildBooking(BookingRequestDTO dto, BookingStatus bookingStatus) {
-        Optional<Room> room = roomRepository.findById(Long.valueOf(dto.getRoomId()));
-        room.orElseThrow();
-
+    private Booking buildBooking(BookingRequestDTO dto, RoomEnum room, BookingStatusEnum bookingStatus) throws HotelException {
         Optional<Guest> guest = guestRepository.findById(Long.valueOf(dto.getGuestId()));
-        guest.orElseThrow();
+        guest.orElseThrow(new HotelException(ExceptionDefinitionsEnum.GUEST_NOT_FOUND));
 
         Booking booking = new Booking();
-        booking.setRoom(room.get());
+        booking.setRoom(room.name());
         booking.setGuest(guest.get());
+        booking.setReservationNumber(ReservationNumberBuilder.buildReservationNumber());
         booking.setCheckinDate(dto.getCheckinDate());
         booking.setCheckoutDate(dto.getCheckoutDate());
         booking.setBookingStatus(bookingStatus.name());
@@ -83,13 +83,14 @@ public class BookingServiceImpl implements BookingService {
 
     private BookingResponseDTO buildBookingResponseDTO(Booking booking) {
         BookingResponseDTO responseDTO = new BookingResponseDTO();
-        responseDTO.setBookingId(booking.getId());
+        responseDTO.setReservationNumber(booking.getReservationNumber());
         responseDTO.setGuestName(booking.getGuest().getName());
-        responseDTO.setRoomName(booking.getRoom().getName());
+
+        responseDTO.setRoomName(RoomEnum.valueOf(booking.getRoom()).getRoomName());
         responseDTO.setCheckinDate(booking.getCheckinDate());
         responseDTO.setCheckoutDate(booking.getCheckoutDate());
 
-        BookingStatus bookingStatus = BookingStatus.valueOf(booking.getBookingStatus());
+        BookingStatusEnum bookingStatus = BookingStatusEnum.valueOf(booking.getBookingStatus());
         responseDTO.setBookingStatus(bookingStatus.getBookingStatus());
 
         return responseDTO;

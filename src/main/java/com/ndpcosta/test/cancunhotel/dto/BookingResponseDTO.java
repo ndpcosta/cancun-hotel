@@ -20,8 +20,8 @@ public class BookingResponseDTO implements Serializable {
     private String bookingStatus;
 
     @NotNull
-    @JsonProperty("booking_id")
-    private Long bookingId;
+    @JsonProperty("reservation_number")
+    private String reservationNumber;
 
     @NotNull
     @JsonProperty("choosed_room")

@@ -3,7 +3,7 @@ package com.ndpcosta.test.cancunhotel.enums;
 import lombok.Getter;
 
 @Getter
-public enum BookingStatus {
+public enum BookingStatusEnum {
 
     CONFIRMED("Booking confirmed"),
     CANCELED("Booking canceled"),
@@ -11,7 +11,7 @@ public enum BookingStatus {
 
     private String bookingStatus;
 
-    BookingStatus(String bookingStatus) {
+    BookingStatusEnum(String bookingStatus) {
         this.bookingStatus = bookingStatus;
     }
 }

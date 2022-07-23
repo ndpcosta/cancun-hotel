@@ -1,11 +1,13 @@
 package com.ndpcosta.test.cancunhotel.exception;
 
+import com.ndpcosta.test.cancunhotel.enums.ExceptionDefinitionsEnum;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 @Data
-public final class HotelException extends Exception implements Serializable {
+public final class HotelException extends Throwable implements Serializable, Supplier<HotelException> {
 
     private final String exceptionId;
 
@@ -19,4 +21,8 @@ public final class HotelException extends Exception implements Serializable {
         this.message = exceptionDefinitionsEnum.getErrorDescription();
     }
 
+    @Override
+    public HotelException get() {
+        return this;
+    }
 }
