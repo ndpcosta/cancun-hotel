@@ -1,8 +1,8 @@
 package com.ndpcosta.test.cancunhotel.enums;
 
-import java.util.Arrays;
-import java.util.Optional;
+import lombok.Getter;
 
+@Getter
 public enum BookingStatus {
 
     CONFIRMED("Booking confirmed"),
@@ -11,10 +11,7 @@ public enum BookingStatus {
 
     private String bookingStatus;
 
-    private BookingStatus(String bookingStatus) {
+    BookingStatus(String bookingStatus) {
         this.bookingStatus = bookingStatus;
-    }
-    public String getBookingStatus() {
-        return this.bookingStatus;
     }
 }

@@ -6,6 +6,8 @@ import com.ndpcosta.test.cancunhotel.entity.Booking;
 import com.ndpcosta.test.cancunhotel.entity.Guest;
 import com.ndpcosta.test.cancunhotel.entity.Room;
 import com.ndpcosta.test.cancunhotel.enums.BookingStatus;
+import com.ndpcosta.test.cancunhotel.exception.ExceptionDefinitionsEnum;
+import com.ndpcosta.test.cancunhotel.exception.HotelException;
 import com.ndpcosta.test.cancunhotel.repository.BookingRepository;
 import com.ndpcosta.test.cancunhotel.repository.GuestRepository;
 import com.ndpcosta.test.cancunhotel.repository.RoomRepository;
@@ -34,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDTO createBooking(BookingRequestDTO dto) {
+    public BookingResponseDTO createBooking(BookingRequestDTO dto) throws HotelException {
         checkReservationRequest(dto);
         checkRoomAvailabity(dto.getCheckinDate(), dto.getCheckoutDate());
 
@@ -48,19 +50,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void changeBooking() {
+    public void changeBooking() {}
 
+    private void checkRoomAvailabity(LocalDate checkinDate, LocalDate checkoutDate) throws HotelException {
+        if(bookingRepository.findRoomAlreadyBooked(checkinDate, checkoutDate).isPresent()){
+            throw new HotelException(ExceptionDefinitionsEnum.ROOM_NOT_AVAILABLE);
+        };
     }
 
-    private void checkRoomAvailabity(LocalDate checkinDate, LocalDate checkoutDate) {
-        if(!bookingRepository.findRoomAlreadyBooked(checkinDate, checkoutDate).isEmpty()){
-            throw new NullPointerException();
-        }
-    }
-
-    private void checkReservationRequest(BookingRequestDTO dto) {
+    private void checkReservationRequest(BookingRequestDTO dto) throws HotelException {
         if(dto.getCheckinDate().isAfter((LocalDate.now().plusDays(31)))){
-            //throw error - too early to book, please book with 30 or less days in advance
+            throw new HotelException(ExceptionDefinitionsEnum.TOO_EARLY_TOO_BOOK);
         }
     }
 
